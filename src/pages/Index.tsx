@@ -1,16 +1,47 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import LandingPage from '@/components/LandingPage';
+import AgeInput from '@/components/AgeInput';
+import QuizView from '@/components/QuizView';
+import ResultsPage from '@/components/ResultsPage';
+import { useQuiz } from '@/hooks/useQuiz';
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+type Screen = 'landing' | 'age' | 'quiz' | 'results';
+
+const Index = () => {
+  const [screen, setScreen] = useState<Screen>('landing');
+  const [age, setAge] = useState(25);
+  const quiz = useQuiz(age);
+
+  const handleAgeSubmit = (userAge: number) => {
+    setAge(userAge);
+    setScreen('quiz');
+    // Small delay to ensure state is set
+    setTimeout(() => quiz.startQuiz(), 50);
+  };
+
+  const handleRestart = () => {
+    setScreen('landing');
+  };
+
+  if (screen === 'landing') {
+    return <LandingPage onStart={() => setScreen('age')} />;
+  }
+
+  if (screen === 'age') {
+    return <AgeInput onSubmit={handleAgeSubmit} onBack={() => setScreen('landing')} />;
+  }
+
+  if (screen === 'quiz' && quiz.state.isComplete && quiz.results) {
+    return <ResultsPage results={quiz.results} onRestart={handleRestart} />;
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
-    </div>
+    <QuizView
+      state={quiz.state}
+      onAnswer={quiz.submitAnswer}
+      onHint={quiz.toggleHint}
+    />
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
