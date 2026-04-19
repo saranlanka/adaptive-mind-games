@@ -8,28 +8,31 @@
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: Arial;
       background: linear-gradient(135deg, #667eea, #764ba2);
       color: white;
       text-align: center;
     }
 
     .container {
-      padding: 50px 20px;
+      padding: 40px 20px;
     }
 
-    h1 {
-      font-size: 2.5rem;
+    input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
+      margin: 10px;
     }
 
     button {
-      padding: 12px 25px;
+      padding: 12px 20px;
       margin: 10px;
-      font-size: 16px;
       border: none;
       border-radius: 8px;
       background: white;
-      color: #333;
+      color: black;
       cursor: pointer;
     }
 
@@ -41,49 +44,84 @@
 
 <body>
 
+<!-- HOME -->
 <div class="container" id="home">
   <h1>🧠 Adaptive IQ Tester</h1>
-  <p>Test your intelligence with dynamic questions.</p>
-  <button onclick="startTest()">Start Test</button>
+  <button onclick="showAge()">Start</button>
 </div>
 
-<div id="game" style="display:none;">
+<!-- AGE INPUT -->
+<div class="container" id="ageBox" style="display:none;">
+  <h2>Enter Your Age</h2>
+  <input type="number" id="age" placeholder="Your age"/>
+  <br>
+  <button onclick="startGame()">Next</button>
+</div>
+
+<!-- GAME -->
+<div class="container" id="game" style="display:none;">
   <h2 id="question"></h2>
   <div id="options"></div>
 </div>
 
 <script>
-let questions = [
-  { q: "2, 4, 8, ?", options: [10, 12, 16], answer: 16 },
-  { q: "3, 6, 12, ?", options: [18, 24, 36], answer: 24 },
-  { q: "5, 10, 20, ?", options: [25, 30, 40], answer: 40 },
-  { q: "1, 1, 2, 3, 5, ?", options: [6, 8, 10], answer: 8 },
-  { q: "10, 20, 30, ?", options: [40, 50, 60], answer: 40 }
-];
-
+let questions = [];
 let current = 0;
 let score = 0;
 
-function startTest() {
-  document.getElementById("home").style.display = "none";
-  document.getElementById("game").style.display = "block";
+// Question sets
+let easy = [
+  {q:"2 + 2 = ?", options:[3,4,5], answer:4},
+  {q:"5 + 3 = ?", options:[6,7,8], answer:8}
+];
+
+let medium = [
+  {q:"2,4,8,?", options:[12,16,20], answer:16},
+  {q:"3,6,12,?", options:[18,24,30], answer:24}
+];
+
+let hard = [
+  {q:"1,1,2,3,5,?", options:[6,8,10], answer:8},
+  {q:"10,20,30,?", options:[40,50,60], answer:40}
+];
+
+// UI functions
+function showAge(){
+  document.getElementById("home").style.display="none";
+  document.getElementById("ageBox").style.display="block";
+}
+
+function startGame(){
+  let age = document.getElementById("age").value;
+
+  if(age < 10){
+    questions = easy;
+  } else if(age < 18){
+    questions = medium;
+  } else {
+    questions = hard;
+  }
+
+  document.getElementById("ageBox").style.display="none";
+  document.getElementById("game").style.display="block";
+
   loadQuestion();
 }
 
-function loadQuestion() {
+function loadQuestion(){
   let q = questions[current];
   document.getElementById("question").innerText = q.q;
 
-  let optionsHTML = "";
-  q.options.forEach(opt => {
-    optionsHTML += `<button onclick="checkAnswer(${opt})">${opt}</button><br>`;
+  let html = "";
+  q.options.forEach(opt=>{
+    html += `<button onclick="check(${opt})">${opt}</button><br>`;
   });
 
-  document.getElementById("options").innerHTML = optionsHTML;
+  document.getElementById("options").innerHTML = html;
 }
 
-function checkAnswer(ans) {
-  if (ans === questions[current].answer) {
+function check(ans){
+  if(ans === questions[current].answer){
     score++;
     alert("Correct ✅");
   } else {
@@ -92,29 +130,17 @@ function checkAnswer(ans) {
 
   current++;
 
-  if (current < questions.length) {
+  if(current < questions.length){
     loadQuestion();
   } else {
     showResult();
   }
 }
 
-function showResult() {
-  let resultText = "";
-
-  if (score === questions.length) {
-    resultText = "🔥 Genius Level!";
-  } else if (score >= 3) {
-    resultText = "💡 Good Intelligence!";
-  } else {
-    resultText = "📚 Keep Practicing!";
-  }
-
-  document.getElementById("game").innerHTML = `
-    <h2>Your Score: ${score}/${questions.length}</h2>
-    <p>${resultText}</p>
-    <button onclick="location.reload()">Restart</button>
-  `;
+function showResult(){
+  document.getElementById("game").innerHTML =
+    `<h2>Your Score: ${score}/${questions.length}</h2>
+     <button onclick="location.reload()">Restart</button>`;
 }
 </script>
 
