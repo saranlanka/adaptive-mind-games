@@ -1,8 +1,8 @@
-5<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Adaptive IQ Tester</title>
 
   <style>
@@ -22,20 +22,15 @@
       font-size: 2.5rem;
     }
 
-    p {
-      font-size: 1.2rem;
-      margin: 20px 0;
-    }
-
     button {
       padding: 12px 25px;
+      margin: 10px;
       font-size: 16px;
       border: none;
       border-radius: 8px;
       background: white;
       color: #333;
       cursor: pointer;
-      transition: 0.3s;
     }
 
     button:hover {
@@ -45,16 +40,83 @@
 </head>
 
 <body>
-  <div class="container">
-    <h1>🧠 Adaptive IQ Tester</h1>
-    <p>Test your intelligence with dynamic questions that adapt to your level.</p>
-    <button onclick="startTest()">Start Test</button>
-  </div>
 
-  <script>
-    function startTest() {
-      alert("Test feature coming soon 🚀");
-    }
-  </script>
+<div class="container" id="home">
+  <h1>🧠 Adaptive IQ Tester</h1>
+  <p>Test your intelligence with dynamic questions.</p>
+  <button onclick="startTest()">Start Test</button>
+</div>
+
+<div id="game" style="display:none;">
+  <h2 id="question"></h2>
+  <div id="options"></div>
+</div>
+
+<script>
+let questions = [
+  { q: "2, 4, 8, ?", options: [10, 12, 16], answer: 16 },
+  { q: "3, 6, 12, ?", options: [18, 24, 36], answer: 24 },
+  { q: "5, 10, 20, ?", options: [25, 30, 40], answer: 40 },
+  { q: "1, 1, 2, 3, 5, ?", options: [6, 8, 10], answer: 8 },
+  { q: "10, 20, 30, ?", options: [40, 50, 60], answer: 40 }
+];
+
+let current = 0;
+let score = 0;
+
+function startTest() {
+  document.getElementById("home").style.display = "none";
+  document.getElementById("game").style.display = "block";
+  loadQuestion();
+}
+
+function loadQuestion() {
+  let q = questions[current];
+  document.getElementById("question").innerText = q.q;
+
+  let optionsHTML = "";
+  q.options.forEach(opt => {
+    optionsHTML += `<button onclick="checkAnswer(${opt})">${opt}</button><br>`;
+  });
+
+  document.getElementById("options").innerHTML = optionsHTML;
+}
+
+function checkAnswer(ans) {
+  if (ans === questions[current].answer) {
+    score++;
+    alert("Correct ✅");
+  } else {
+    alert("Wrong ❌");
+  }
+
+  current++;
+
+  if (current < questions.length) {
+    loadQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  let resultText = "";
+
+  if (score === questions.length) {
+    resultText = "🔥 Genius Level!";
+  } else if (score >= 3) {
+    resultText = "💡 Good Intelligence!";
+  } else {
+    resultText = "📚 Keep Practicing!";
+  }
+
+  document.getElementById("game").innerHTML = `
+    <h2>Your Score: ${score}/${questions.length}</h2>
+    <p>${resultText}</p>
+    <button onclick="location.reload()">Restart</button>
+  `;
+}
+</script>
+
 </body>
 </html>
